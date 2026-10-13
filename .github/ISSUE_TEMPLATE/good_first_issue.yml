@@ -1,0 +1,72 @@
+name: Good first issue
+description: A small, self-contained task with the exact files to touch, suitable for a first-time contributor.
+title: "[Good first issue]: "
+labels:
+  - good first issue
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Maintainers: keep this scoped to one sitting of work and name the files
+        involved. A contributor should be able to finish it without asking for
+        context that is not written down here.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: What needs doing
+      description: One or two sentences, in plain language. No prior knowledge of the codebase assumed.
+      placeholder: "The health check should also verify that every issue template has a title prefix."
+    validations:
+      required: true
+
+  - type: textarea
+    id: files
+    attributes:
+      label: Files to touch
+      description: Exact paths, so nobody has to hunt for the right place to start.
+      placeholder: |
+        - scripts/check_repo.py (add the new check)
+        - README.md (mention it in the health check description)
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Done when
+      description: A checklist a reviewer can verify mechanically.
+      value: |
+        - [ ] The change is implemented and the stated command runs clean
+        - [ ] `python scripts/check_repo.py` passes
+        - [ ] CI is green on the pull request
+        - [ ] User-facing docs updated if behaviour changed
+    validations:
+      required: true
+
+  - type: textarea
+    id: hints
+    attributes:
+      label: Hints and starting points
+      description: Where to read first, plus any gotchas you already know about.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: effort
+    attributes:
+      label: Rough effort
+      options:
+        - Under an hour
+        - A couple of hours
+        - An afternoon
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: mentor
+    attributes:
+      label: Support
+      options:
+        - label: A maintainer will answer questions in this thread and review the pull request.
+          required: true

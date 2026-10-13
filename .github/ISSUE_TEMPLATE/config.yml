@@ -1,0 +1,13 @@
+# Blank issues are disabled so every report arrives with the context we need to
+# act on it. Please pick a template below.
+blank_issues_enabled: false
+contact_links:
+  - name: Contributing guide
+    url: https://github.com/virtualtradrs/ai-algo-trading-starter/blob/main/CONTRIBUTING.md
+    about: Local setup, branch naming, commit style and the pull-request process — read this before opening a pull request.
+  - name: Code of Conduct
+    url: https://github.com/virtualtradrs/ai-algo-trading-starter/blob/main/CODE_OF_CONDUCT.md
+    about: How we expect contributors to behave, and how to report a problem.
+  - name: Questions and general discussion
+    url: https://github.com/virtualtradrs/ai-algo-trading-starter/issues?q=label%3Aquestion
+    about: Not a bug and not a feature request? Open a question issue and a maintainer will answer in the thread.

@@ -1,0 +1,77 @@
+name: Bug report
+description: Something in the toolkit is broken, wrong, or misleading.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Please do not paste secrets,
+        node RPC credentials or API keys — redact them first.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the actual behaviour, including the exact error output.
+      placeholder: "Running `python scripts/check_repo.py` exits 1 and prints ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect instead?
+      placeholder: "The health check should pass on a clean checkout of main."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Commands in order, from a clean clone if you can.
+      placeholder: |
+        1. git clone ...
+        2. python3 -m venv .venv && source .venv/bin/activate
+        3. pip install -r requirements.txt
+        4. python scripts/check_repo.py
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Commit or version
+      description: The commit SHA or branch you are running.
+      placeholder: "main @ 1a2b3c4"
+    validations:
+      required: true
+
+  - type: input
+    id: python-version
+    attributes:
+      label: Python version and OS
+      description: Output of `python --version`, plus your operating system.
+      placeholder: "Python 3.11.9 on Ubuntu 24.04"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: data-report
+    attributes:
+      label: If this is about the dataset
+      options:
+        - label: This is about generated data in `data/` — do not hand-edit it, see the contributing guide
+        - label: I have included the timestamp, field, observed value, expected value and run URL
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
+        - label: I am reporting observed behaviour, and my reproduction steps are ones I actually ran.
+          required: true
