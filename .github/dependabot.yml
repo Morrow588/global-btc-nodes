@@ -1,0 +1,52 @@
+# Dependabot configuration.
+# Weekly and grouped: one PR per ecosystem per week instead of one PR per
+# dependency, so review stays a real task rather than a wall of noise.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore(deps)"
+      include: scope
+    labels:
+      - dependencies
+    groups:
+      # Runtime libraries move together: bump and test them in one PR.
+      python-runtime:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+      # Major versions can change behaviour, so they get their own PR each week
+      # instead of being folded in with the routine bump.
+      python-runtime-major:
+        patterns:
+          - "*"
+        update-types:
+          - major
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore(ci)"
+      include: scope
+    labels:
+      - dependencies
+      - github-actions
+    groups:
+      github-actions:
+        patterns:
+          - "*"
