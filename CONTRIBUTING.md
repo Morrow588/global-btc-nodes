@@ -9,8 +9,8 @@ By participating you agree to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 Python 3.10 or newer is required (CI runs 3.11).
 
 ```bash
-git clone https://github.com/virtualtradrs/ai-algo-trading-starter.git
-cd ai-algo-trading-starter
+git clone https://github.com/virtualtradrs/global-btc-nodes.git
+cd global-btc-nodes
 
 python3 -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
@@ -28,9 +28,9 @@ That script is the same one CI runs on every push. It checks that the community 
 
 ## Finding something to work on
 
-- Issues labelled [`good first issue`](https://github.com/virtualtradrs/ai-algo-trading-starter/labels/good%20first%20issue) are scoped to be completed in one sitting and name the files to touch.
+- Issues labelled [`good first issue`](https://github.com/virtualtradrs/global-btc-nodes/labels/good%20first%20issue) are scoped to be completed in one sitting and name the files to touch.
 - Issues labelled `help wanted` are open to anyone.
-- Nothing fits? Open a <a href="https://github.com/virtualtradrs/ai-algo-trading-starter/issues/new/choose">feature request</a> describing the problem you want solved before writing a large patch — it is much cheaper to change direction on an issue than on a pull request.
+- Nothing fits? Open a <a href="https://github.com/virtualtradrs/global-btc-nodes/issues/new/choose">feature request</a> describing the problem you want solved before writing a large patch — it is much cheaper to change direction on an issue than on a pull request.
 
 Comment on the issue to say you are taking it, so two people don't duplicate work.
 

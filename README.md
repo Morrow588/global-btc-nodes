@@ -1,13 +1,15 @@
-# AI Algorithmic Trading Starter
+# Bitcoin Node & Market Data Toolkit for AI Algorithmic Trading
 
-**An open-source toolkit for building, backtesting and reproducing AI-driven algorithmic trading strategies on live Bitcoin network telemetry and public market data.**
+**An open-source home for the live Bitcoin node & market dataset this project publishes, and for the algorithmic-trading research scaffolding built on top of it: a scheduled pipeline that versions real Bitcoin network telemetry and BTC-USD market data into the repository, plus the reproducible quantitative experiments and AI-driven strategy work that consume it.**
 
-[![CI](https://img.shields.io/github/actions/workflow/status/virtualtradrs/ai-algo-trading-starter/ci.yml?branch=main&label=CI&logo=github&logoColor=white)](https://github.com/virtualtradrs/ai-algo-trading-starter/actions/workflows/ci.yml)
+> **Related / original project:** this repository previously hosted the *Global BTC Nodes Dashboard*. Its original README is preserved verbatim at [`docs/legacy/global-btc-nodes-readme.md`](docs/legacy/global-btc-nodes-readme.md) and its live demo still runs at [global-btc-nodes.preview.emergentagent.com](https://global-btc-nodes.preview.emergentagent.com/).
+
+[![CI](https://img.shields.io/github/actions/workflow/status/virtualtradrs/global-btc-nodes/ci.yml?branch=main&label=CI&logo=github&logoColor=white)](https://github.com/virtualtradrs/global-btc-nodes/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/downloads/)
-[![Last commit](https://img.shields.io/github/last-commit/virtualtradrs/ai-algo-trading-starter?logo=git&logoColor=white)](https://github.com/virtualtradrs/ai-algo-trading-starter/commits/main)
-[![Issues](https://img.shields.io/github/issues/virtualtradrs/ai-algo-trading-starter?logo=github)](https://github.com/virtualtradrs/ai-algo-trading-starter/issues)
-[![Stars](https://img.shields.io/github/stars/virtualtradrs/ai-algo-trading-starter?style=social)](https://github.com/virtualtradrs/ai-algo-trading-starter/stargazers)
+[![Last commit](https://img.shields.io/github/last-commit/virtualtradrs/global-btc-nodes?logo=git&logoColor=white)](https://github.com/virtualtradrs/global-btc-nodes/commits/main)
+[![Issues](https://img.shields.io/github/issues/virtualtradrs/global-btc-nodes?logo=github)](https://github.com/virtualtradrs/global-btc-nodes/issues)
+[![Stars](https://img.shields.io/github/stars/virtualtradrs/global-btc-nodes?style=social)](https://github.com/virtualtradrs/global-btc-nodes/stargazers)
 
 ---
 
@@ -15,7 +17,7 @@
 
 Most algorithmic trading repositories are a single notebook that imports a CSV nobody can find, alongside a backtest with no recorded parameters. You can read the code, but you cannot reproduce the result — and you cannot tell whether the strategy was ever run on anything except a hand-picked slice of history.
 
-This project is the opposite of that. It is a **reproducible starting point for AI algorithmic trading**: the data comes in through a scheduled, versioned pipeline; the dataset lives in the repository as plain JSON and CSV; and every research artifact is driven by a config file you can re-run. Clone it and you have the same inputs, the same seeds and the same code path as everyone else.
+This project is the opposite of that. It is a **reproducible starting point for AI-driven algorithmic trading research**: the data comes in through a scheduled, versioned pipeline; the dataset lives in the repository as plain JSON and CSV; and every research artifact is driven by a config file you can re-run. Clone it and you have the same inputs, the same seeds and the same code path as everyone else.
 
 The two goals, in order:
 
@@ -137,8 +139,8 @@ A short screen recording — the daily dataset diff, a notebook run from a clean
 *(This is runnable today.)*
 
 ```bash
-git clone https://github.com/virtualtradrs/ai-algo-trading-starter.git
-cd ai-algo-trading-starter
+git clone https://github.com/virtualtradrs/global-btc-nodes.git
+cd global-btc-nodes
 
 python3 -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
@@ -205,8 +207,8 @@ Each run records the dataset revision it read, the config it was given, the seed
 Contributions are welcome, and the process is short:
 
 - Read [CONTRIBUTING.md](CONTRIBUTING.md) for local setup, branch naming and commit style (Conventional Commits).
-- New here? Look for issues labelled [`good first issue`](https://github.com/virtualtradrs/ai-algo-trading-starter/labels/good%20first%20issue) — they are scoped to be finishable in a sitting, with the exact files to touch listed in the issue.
-- Everything else — bug reports, feature requests, documentation — goes through the [issue templates](https://github.com/virtualtradrs/ai-algo-trading-starter/issues/new/choose).
+- New here? Look for issues labelled [`good first issue`](https://github.com/virtualtradrs/global-btc-nodes/labels/good%20first%20issue) — they are scoped to be finishable in a sitting, with the exact files to touch listed in the issue.
+- Everything else — bug reports, feature requests, documentation — goes through the [issue templates](https://github.com/virtualtradrs/global-btc-nodes/issues/new/choose).
 - Participation is governed by our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ### Good first issues
@@ -220,7 +222,7 @@ The repository maintains a standing set of entry points: improving dataset valid
 | Milestone | What lands | Status |
 | --- | --- | --- |
 | M0 — Foundation | README, LICENSE, CONTRIBUTING, Code of Conduct, issue templates, Dependabot, CI health check | **Done** |
-| M1 — Data pipeline | Scheduled fetch of Bitcoin network telemetry + BTC-USD candles, validation, committed daily dataset (`scripts/fetch_data.py`, `.github/workflows/auto-update.yml`) | **Done** — fetcher verified locally against live APIs; the first scheduled run needs the repository published |
+| M1 — Data pipeline | Scheduled fetch of Bitcoin network telemetry + BTC-USD candles, validation, committed daily dataset (`scripts/fetch_data.py`, `.github/workflows/auto-update.yml`) | **Done** — scheduled daily job in `.github/workflows/auto-update.yml`, committing the dataset only when it changes |
 | M2 — Research | Notebooks, experiment runner, baseline strategies and evaluation harness | Planned |
 | M3 — Strategy | Signal generation, cost-aware backtests, paper-trading adapter | Planned |
 
