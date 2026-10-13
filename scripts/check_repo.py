@@ -34,6 +34,10 @@ REQUIRED_FILES = [
     ".github/ISSUE_TEMPLATE/good_first_issue.yml",
     ".github/ISSUE_TEMPLATE/config.yml",
     "data/README.md",
+    "data/btc_node_metrics.json",
+    "data/btc_market_daily.csv",
+    "scripts/fetch_data.py",
+    ".github/workflows/auto-update.yml",
 ]
 
 README_SECTIONS = [
@@ -145,6 +149,8 @@ def main() -> int:
     check_issue_templates(root, problems)
 
     checked = len(REQUIRED_FILES) + len(README_SECTIONS)
+    checked += check_auto_update_workflow(root, problems)
+    checked += check_dataset(root, problems)
     if problems:
         print(f"check_repo: {len(problems)} problem(s) found in {root}\n")
         for problem in problems:
@@ -154,6 +160,82 @@ def main() -> int:
 
     print(f"check_repo: OK - {checked} checks passed in {root}")
     return 0
+
+
+DATASET_CSV_COLUMNS = ["date", "open", "high", "low", "close", "volume", "source"]
+
+
+def check_auto_update_workflow(root: Path, problems: list[str]) -> int:
+    """The scheduled job must be able to commit real data, and only when it moved."""
+    path = root / ".github/workflows/auto-update.yml"
+    if not path.is_file():
+        return 0
+    text = path.read_text(encoding="utf-8")
+    checks = [
+        (r"^\s*schedule:", "no schedule trigger"),
+        (r"^\s*workflow_dispatch:", "no workflow_dispatch trigger"),
+        (r"^\s*contents: write", "permissions: contents: write missing"),
+        (r"^\s*concurrency:", "no concurrency guard"),
+        (r"cron:", "no cron expression"),
+        ("fetch_data.py", "does not run scripts/fetch_data.py"),
+        ("git status --porcelain", "commit is not guarded on an actual data change"),
+        ("commit -F", "does not commit with the generated message"),
+        ("check_repo.py", "does not re-check the repository after fetching"),
+    ]
+    for pattern, message in checks:
+        if not re.search(pattern, text, flags=re.MULTILINE):
+            problems.append(f".github/workflows/auto-update.yml: {message}")
+    return len(checks)
+
+
+def check_dataset(root: Path, problems: list[str]) -> int:
+    """The committed dataset must match the schema the pipeline documents."""
+    import csv
+    import json
+
+    checks = 0
+    json_path = root / "data/btc_node_metrics.json"
+    if json_path.is_file():
+        try:
+            document = json.loads(json_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            problems.append(f"data/btc_node_metrics.json: not valid JSON ({exc})")
+            document = None
+        if isinstance(document, dict):
+            snapshots = document.get("snapshots")
+            checks += 1
+            if not isinstance(snapshots, list) or not snapshots:
+                problems.append("data/btc_node_metrics.json: 'snapshots' must be a non-empty list")
+            else:
+                dates = [entry.get("date") for entry in snapshots]
+                checks += 1
+                if dates != sorted(dates) or len(set(dates)) != len(dates):
+                    problems.append("data/btc_node_metrics.json: snapshot dates must be unique and increasing")
+                for entry in snapshots:
+                    checks += 1
+                    chain = entry.get("chain") or {}
+                    missing = [k for k in ("tip_height", "mempool_tx_count", "mempool_vsize_bytes") if chain.get(k) is None]
+                    if missing:
+                        problems.append(f"data/btc_node_metrics.json: {entry.get('date')} missing chain fields {missing}")
+    csv_path = root / "data/btc_market_daily.csv"
+    if csv_path.is_file():
+        import csv as _csv
+
+        with csv_path.open("r", encoding="utf-8", newline="") as handle:
+            reader = _csv.DictReader(handle)
+            checks += 1
+            if reader.fieldnames != DATASET_CSV_COLUMNS:
+                problems.append(f"data/btc_market_daily.csv: header is {reader.fieldnames}, expected {DATASET_CSV_COLUMNS}")
+            rows = list(reader)
+        checks += 1
+        if not rows:
+            problems.append("data/btc_market_daily.csv: no data rows")
+        else:
+            dates = [row.get("date") for row in rows]
+            checks += 1
+            if dates != sorted(dates) or len(set(dates)) != len(dates):
+                problems.append("data/btc_market_daily.csv: rows must be sorted by unique date")
+    return checks
 
 
 if __name__ == "__main__":
