@@ -37,3 +37,9 @@ jobs:
 
       - name: Check repository health (community files, README, CI wiring)
         run: python scripts/check_repo.py
+
+      # Re-derives the committed baseline from the committed dataset and compares
+      # it with results/baseline_results.json. Offline by design: the dataset is in
+      # the repository, so a green run here proves a clean clone reproduces it.
+      - name: Verify the committed baseline reproduces
+        run: python scripts/run_baseline.py --check

@@ -119,6 +119,37 @@ Node telemetry is interesting for algorithmic trading because it is *not* price:
 
 ---
 
+## Baseline results
+
+*(Measured on the committed dataset, not transcribed by hand: `python scripts/run_baseline.py` produces every number below.)*
+
+A long-only SMA crossover (fast 20 / slow 100, flat otherwise) against buy-and-hold over the same window, both net of the same costs:
+
+| Strategy | Total return | CAGR | Max drawdown | Trades (fills) | Win rate | Time in market | Final equity |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| SMA 20/100 crossover | -8.87% | -5.32% | 33.72% | 9 | 40.00% | 43.89% | $9,112.67 |
+| Buy & hold | -20.79% | -12.81% | 53.09% | 1 | 0.00% | 100.00% | $7,921.38 |
+
+Over the 622 trading days from **2025-01-30 to 2026-10-13** (721 committed candles, the first 99 rows used only to warm the moving averages and excluded from the returns), the crossover finished **+11.92 percentage points** ahead of buy-and-hold after costs — inside a period where BTC-USD itself lost 20.79%. Read it plainly: both strategies lost money, and the honest summary is that this rule lost less than holding, not that it works.
+
+Reproduce it from a clean clone — no network, no notebook, standard library only:
+
+```bash
+python scripts/run_baseline.py     # prints this table, rewrites results/baseline_results.json
+python scripts/run_baseline.py --check   # re-derives the metrics and diffs them against the committed file
+```
+
+- **No look-ahead:** the signal is computed from closes up to and including day `t`, and the resulting position only applies from day `t+1` (filled at that close), so no day's return is earned using a price that was not yet observable.
+- **Costs:** 0.10% fee + 0.05% slippage per side are charged on the executed notional of every fill — entry and exit both pay them. The windows, the costs and the starting capital are a config block at the top of the script and are echoed into the output file.
+- **Deterministic:** no RNG, no clock, no network (`"randomness": "none (deterministic)"`, `"seed": null`); the dataset is the only input, so a clean clone re-derives identical numbers — which is exactly what the `--check` step in CI verifies.
+- **Price-only, on purpose:** the experiment reads `data/btc_market_daily.csv` only. `data/btc_node_metrics.json` holds a couple of daily snapshots, far too few to backtest a node-derived signal, and nothing here claims otherwise.
+
+Full output, assumptions, per-strategy diagnostics and the rounding rule: [`results/baseline_results.json`](results/baseline_results.json) — see [`results/README.md`](results/README.md).
+
+This baseline exists to be beaten: it is a measurement floor for future models, so that "better" means better than a measured number rather than better than a story. **It is not trading advice and not a strategy recommendation.**
+
+---
+
 ## Machine Learning strategy layer
 
 *(Planned.)* The strategy layer is deliberately kept last, and deliberately thin. It consumes the versioned dataset, produces signals, and evaluates them — with the boring machinery that makes results believable:
@@ -127,6 +158,8 @@ Node telemetry is interesting for algorithmic trading because it is *not* price:
 - **Explicit costs.** Fees and slippage are parameters of the experiment, not afterthoughts.
 - **Seeded and config-driven.** One config file per experiment, seed recorded in the output, run derived from a dataset revision.
 - **Baselines first.** A strategy is reported against buy-and-hold and a simple momentum baseline before any model is called an improvement.
+
+The first of those baselines is already real, measured and committed — see [Baseline results](#baseline-results) — so the next strategy has a number to beat rather than a claim to out-argue.
 
 Baselines and evaluation come before modelling on purpose: a crossover that ties buy-and-hold after costs is a useful finding, and reporting it is more valuable than hiding it.
 
@@ -170,7 +203,13 @@ Run the repository health check — the same script CI runs on every push:
 python scripts/check_repo.py
 ```
 
-It verifies that the community files, CI configuration and README structure are all present and wired up, then exits non-zero with a readable list if anything is missing.
+Run the committed baseline — it needs no network and no notebook, and prints the numbers in [Baseline results](#baseline-results):
+
+```bash
+python scripts/run_baseline.py --check   # re-derive the metrics and diff them against the committed file
+```
+
+`check_repo.py` verifies that the community files, CI configuration and README structure are all present and wired up, then exits non-zero with a readable list if anything is missing.
 
 Fetching the dataset yourself is one command — it needs only `requests`:
 
@@ -197,9 +236,13 @@ The notebooks under `notebooks/` (planned — see [Roadmap](#roadmap)) will run 
  docs/
    ├── assets/                    # banner + showcase chart, drawn from data/ by assets/make_assets.py
    └── legacy/                    # the original Global BTC Nodes Dashboard README, preserved verbatim
+ results/
+   ├── README.md                  # what the committed artifacts are and how to regenerate them
+   └── baseline_results.json      # generated: SMA 20/100 vs buy-and-hold, net of costs
  scripts/
    ├── check_repo.py              # the health check described above
-   └── fetch_data.py              # the fetcher described above
+   ├── fetch_data.py              # the fetcher described above
+   └── run_baseline.py            # the baseline experiment described above
  CODE_OF_CONDUCT.md
  CONTRIBUTING.md
  LICENSE
@@ -242,7 +285,7 @@ The repository maintains a standing set of entry points: improving dataset valid
 | --- | --- | --- |
 | M0 — Foundation | README, LICENSE, CONTRIBUTING, Code of Conduct, issue templates, Dependabot, CI health check | **Done** |
 | M1 — Data pipeline | Scheduled fetch of Bitcoin network telemetry + BTC-USD candles, validation, committed daily dataset (`scripts/fetch_data.py`, `.github/workflows/auto-update.yml`) | **Done** — scheduled daily job in `.github/workflows/auto-update.yml`, committing the dataset only when it changes |
-| M2 — Research | Notebooks, experiment runner, baseline strategies and evaluation harness | Planned |
+| M2 — Research | Notebooks, experiment runner, baseline strategies and evaluation harness | **In progress** — the SMA 20/100 vs buy-and-hold baseline is measured, committed and re-verified in CI (`scripts/run_baseline.py`, `results/baseline_results.json`); notebooks and the evaluation harness are next |
 | M3 — Strategy | Signal generation, cost-aware backtests, paper-trading adapter | Planned |
 
 ---

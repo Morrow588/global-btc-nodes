@@ -1,0 +1,73 @@
+{
+  "script_version": "1.0.0",
+  "script": "scripts/run_baseline.py",
+  "as_of_date": "2026-10-13",
+  "dataset_path": "data/btc_market_daily.csv",
+  "dataset_rows": 721,
+  "dataset_last_close": 83101.2,
+  "period": {
+    "start_date": "2025-01-30",
+    "end_date": "2026-10-13",
+    "trading_days": 622,
+    "calendar_days": 621,
+    "warmup_rows_used": 99
+  },
+  "params": {
+    "strategy": "long-only SMA crossover (fast > slow), flat otherwise",
+    "fast_window": 20,
+    "slow_window": 100,
+    "warmup_rows": 100,
+    "start_date_rule": "row max(slow_window, warmup_rows) of data/btc_market_daily.csv (1-based)",
+    "fee_pct_per_side": 0.1,
+    "slippage_pct_per_side": 0.05,
+    "cost_pct_per_fill_both_sides": 0.15,
+    "start_capital_usd": 10000.0,
+    "signal_timing": "signal from closes up to and including day t; position applies from t+1, filled at the close of t+1",
+    "cost_model": "fee + slippage charged on the executed notional of every fill (entry and exit)"
+  },
+  "randomness": "none (deterministic)",
+  "seed": null,
+  "rounding": "every *_pct and *_equity value is rounded to 2 decimals with Python's round()",
+  "stale": false,
+  "net_of_costs": true,
+  "metrics": {
+    "sma_crossover_20_100": {
+      "total_return_pct": -8.87,
+      "cagr_pct": -5.32,
+      "max_drawdown_pct": 33.72,
+      "num_trades": 9,
+      "win_rate_pct": 40.0,
+      "pct_time_in_market": 43.89,
+      "final_equity": 9112.67,
+      "round_trips": 5
+    },
+    "buy_and_hold": {
+      "total_return_pct": -20.79,
+      "cagr_pct": -12.81,
+      "max_drawdown_pct": 53.09,
+      "num_trades": 1,
+      "win_rate_pct": 0.0,
+      "pct_time_in_market": 100.0,
+      "final_equity": 7921.38,
+      "round_trips": 1
+    }
+  },
+  "outperformance_vs_buy_and_hold_pct": 11.92,
+  "notes": "Price-only baseline on the committed BTC-USD daily candles; the node/mempool telemetry in data/btc_node_metrics.json has too few daily snapshots to be used as a backtest input. This is a measurement floor for future models, not trading advice and not a strategy recommendation.",
+  "diagnostics": {
+    "sma_crossover_20_100": {
+      "entries": 5,
+      "exits": 4,
+      "round_trips": 5,
+      "open_position_at_end": true
+    },
+    "buy_and_hold": {
+      "entries": 1,
+      "exits": 0,
+      "round_trips": 1,
+      "open_position_at_end": true
+    },
+    "win_rate_basis": "share of round trips with positive net P&L after costs; a position open at the end counts as one round trip marked at the final close",
+    "num_trades_basis": "fills executed (an entry or an exit each count; a completed round trip is two fills)"
+  }
+}
