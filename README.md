@@ -2,6 +2,15 @@
 
 **An open-source home for the live Bitcoin node & market dataset this project publishes, and for the algorithmic-trading research scaffolding built on top of it: a scheduled pipeline that versions real Bitcoin network telemetry and BTC-USD market data into the repository, plus the reproducible quantitative experiments and AI-driven strategy work that consume it.**
 
+### Why star this repo
+
+- **Live daily pipeline, real versioned data.** A scheduled GitHub Actions job fetches *Bitcoin network telemetry* and *BTC-USD market data* every day, validates it, and commits only what changed — no heartbeat commits, no hand-written rows. The committed dataset currently holds **721 closed daily candles (2024-10-23 → 2026-10-13)** plus the latest node/mempool snapshots.
+- **Bitcoin data most repositories don't have.** Mempool congestion, recommended fees, chain-tip height and the `bitnodes.io` reachable-node census, joined to daily OHLCV on UTC date — network state, not another copy of the price.
+- **Reproducible quantitative finance, not a notebook screenshot.** The data is byte-addressable in git, so a result is reproducible against the exact dataset revision it was computed from. Clone it and you have the same inputs, the same seeds and the same code path as everyone else.
+- **CI-verified on every push.** `scripts/check_repo.py` runs in `.github/workflows/ci.yml` and fails the build if the community files, CI wiring, README structure or dataset schema drift.
+- **Machine learning strategy layer, kept honest.** Signals, cost-aware backtests and a paper-trading (trading-bot) adapter are the *next* milestone and are labelled **planned** everywhere in this README — there are no invented accuracy numbers, benchmarks or user counts, only measured results and explicit "not built yet" labels.
+- **Good first issues for contributors, MIT licensed.** Entry-point tasks are scoped to be finished in one sitting with the exact files named in the issue, and everything here is reusable under a permissive license.
+
 > **Related / original project:** this repository previously hosted the *Global BTC Nodes Dashboard*. Its original README is preserved verbatim at [`docs/legacy/global-btc-nodes-readme.md`](docs/legacy/global-btc-nodes-readme.md) and its live demo still runs at [global-btc-nodes.preview.emergentagent.com](https://global-btc-nodes.preview.emergentagent.com/).
 
 [![CI](https://img.shields.io/github/actions/workflow/status/virtualtradrs/global-btc-nodes/ci.yml?branch=main&label=CI&logo=github&logoColor=white)](https://github.com/virtualtradrs/global-btc-nodes/actions/workflows/ci.yml)
@@ -10,6 +19,8 @@
 [![Last commit](https://img.shields.io/github/last-commit/virtualtradrs/global-btc-nodes?logo=git&logoColor=white)](https://github.com/virtualtradrs/global-btc-nodes/commits/main)
 [![Issues](https://img.shields.io/github/issues/virtualtradrs/global-btc-nodes?logo=github)](https://github.com/virtualtradrs/global-btc-nodes/issues)
 [![Stars](https://img.shields.io/github/stars/virtualtradrs/global-btc-nodes?style=social)](https://github.com/virtualtradrs/global-btc-nodes/stargazers)
+
+![Bitcoin Node & Market Data Toolkit for AI Algorithmic Trading — live Bitcoin network & market data for reproducible algorithmic trading research](docs/assets/banner.png)
 
 ---
 
@@ -123,14 +134,19 @@ Baselines and evaluation come before modelling on purpose: a crossover that ties
 
 ## Showcase
 
-A short screen recording — the daily dataset diff, a notebook run from a clean clone to a chart, and one strategy evaluated against its baselines — is being produced and will be dropped in here.
+![BTC-USD daily close history from the versioned dataset, with the Bitcoin node and mempool snapshots the pipeline retains](docs/assets/showcase.png)
 
-<!-- TODO: replace with demo.gif -->
-<!--
-![Demo: from a clean clone to a validated dataset and an evaluated strategy](docs/assets/demo.gif)
--->
+Both panels are drawn directly from the files in `data/` — nothing here is a mock-up or a placeholder. The upper panel is every closed daily candle in `data/btc_market_daily.csv`: **721 candles from 2024-10-23 to 2026-10-13**, a high of **$124,766.50 (2025-10-06)**, a low of **$58,531.90 (2026-06-30)** and a latest close of **$83,101.20 (2026-10-13)**. The lower panel plots the Bitcoin network telemetry in `data/btc_node_metrics.json` — the snapshots currently retained are 2026-10-13 (chain tip 971,311, mempool 37.9 MB, 26,142 reachable nodes) and 2026-10-14 (tip 971,386, mempool 39.9 MB, 25,665 reachable nodes), because the pipeline keeps a rolling window and the file was initialised recently, so that panel will fill in day by day.
 
-*Demo coming soon. No placeholder image is embedded on purpose — what you see here will be real output from this repository.*
+Regenerate both images yourself from the current dataset:
+
+```bash
+python -m venv .venv-assets && source .venv-assets/bin/activate
+pip install matplotlib          # asset-only dependency, not required by the pipeline
+python docs/assets/make_assets.py
+```
+
+A short terminal recording — the daily dataset diff and a notebook run from a clean clone — is still planned. It will be added when it is real; the chart above is the real substitute in the meantime, and no placeholder GIF is embedded on purpose.
 
 ---
 
@@ -178,6 +194,9 @@ The notebooks under `notebooks/` (planned — see [Roadmap](#roadmap)) will run 
    ├── README.md                  # dataset contract & schema
    ├── btc_node_metrics.json      # generated: daily chain + node-network snapshots
    └── btc_market_daily.csv       # generated: closed daily BTC-USD candles
+ docs/
+   ├── assets/                    # banner + showcase chart, drawn from data/ by assets/make_assets.py
+   └── legacy/                    # the original Global BTC Nodes Dashboard README, preserved verbatim
  scripts/
    ├── check_repo.py              # the health check described above
    └── fetch_data.py              # the fetcher described above
